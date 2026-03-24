@@ -21,8 +21,8 @@ use style::CLI_STYLES;
 #[command(styles = CLI_STYLES)]
 struct Cmd {
     /// Input file/directory path (WebIDL)
-    #[clap(short = 'i', long = "webidl")]
-    webidl_path: PathBuf,
+    #[clap(short = 'i', long = "webidl", num_args = 1..)]
+    webidl_path: Vec<PathBuf>,
 
     /// Interface name to use
     #[clap(long)]
@@ -81,8 +81,10 @@ fn main() -> Result<()> {
     };
 
     // Ensure the input file path exists
-    if !std::fs::exists(&webidl_path)? {
-        bail!("missing path [{}]", webidl_path.display());
+    for path in &webidl_path {
+        if !std::fs::exists(&path)? {
+            bail!("missing path [{}]", path.display());
+        }
     }
 
     // Print a warning if the output path already exists
@@ -96,15 +98,21 @@ fn main() -> Result<()> {
     }
 
     // Read in the WebIDL input
-    let webidl_input = std::fs::read_to_string(&webidl_path).with_context(|| {
-        format!(
-            "failed to read input WebIDL from [{}]",
-            webidl_path.display()
-        )
-    })?;
+    let mut webidl_input: Vec<String> = Vec::new();
+    for path in webidl_path {
+        webidl_input.push(std::fs::read_to_string(&path).with_context(|| {
+            format!(
+                "failed to read input WebIDL from [{}]",
+                path.display()
+            )
+        })?)
+    }
 
     // Parse the WebIDL input
-    let webidl = parse_webidl(&webidl_input)?;
+    let mut webidl: Vec<weedle::Definition> = Vec::new();
+    for w in &webidl_input {
+        webidl.append(&mut parse_webidl(w.as_str())?);
+    }
 
     // Build the conversion options
     let opts = ConversionOptions {
