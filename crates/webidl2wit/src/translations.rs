@@ -1043,44 +1043,44 @@ impl State<'_> {
                 }
             }
 
-            if matches!(
-                self.resource_inheritance,
-                ResourceInheritance::AsMethods | ResourceInheritance::Both
-            ) {
-                for parent in parents {
-                    let parent_funcs = self
-                        .interface
-                        .items_mut()
-                        .into_iter()
-                        .find_map(|item| match item {
-                            InterfaceItem::Function(_) => None,
-                            InterfaceItem::TypeDef(type_def) => {
-                                let name = type_def.name().clone();
-                                match type_def.kind_mut() {
-                                    wit_encoder::TypeDefKind::Resource(resource) => {
-                                        if name == parent {
-                                            Some(resource.funcs_mut())
-                                        } else {
-                                            None
-                                        }
-                                    }
-                                    _ => None,
-                                }
-                            }
-                        })
-                        .unwrap();
-                    parent_funcs.push({
-                        let mut func = wit_encoder::ResourceFunc::method(
-                            format!("as-{}", child.raw_name()),
-                            false,
-                        );
-                        func.set_result(Some(wit_encoder::Type::option(wit_encoder::Type::named(
-                            child.clone(),
-                        ))));
-                        func
-                    });
-                }
-            }
+            // if matches!(
+            //     self.resource_inheritance,
+            //     ResourceInheritance::AsMethods | ResourceInheritance::Both
+            // ) {
+            //     for parent in parents {
+            //         let parent_funcs = self
+            //             .interface
+            //             .items_mut()
+            //             .into_iter()
+            //             .find_map(|item| match item {
+            //                 InterfaceItem::Function(_) => None,
+            //                 InterfaceItem::TypeDef(type_def) => {
+            //                     let name = type_def.name().clone();
+            //                     match type_def.kind_mut() {
+            //                         wit_encoder::TypeDefKind::Resource(resource) => {
+            //                             if name == parent {
+            //                                 Some(resource.funcs_mut())
+            //                             } else {
+            //                                 None
+            //                             }
+            //                         }
+            //                         _ => None,
+            //                     }
+            //                 }
+            //             })
+            //             .unwrap();
+            //         parent_funcs.push({
+            //             let mut func = wit_encoder::ResourceFunc::method(
+            //                 format!("as-{}", child.raw_name()),
+            //                 false,
+            //             );
+            //             func.set_result(Some(wit_encoder::Type::option(wit_encoder::Type::named(
+            //                 child.clone(),
+            //             ))));
+            //             func
+            //         });
+            //     }
+            // }
         }
 
         Ok(())
