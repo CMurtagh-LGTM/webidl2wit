@@ -56,7 +56,7 @@ struct Cmd {
 
     /// Add empty interfaces with these names.
     /// Useful if the WebIDL references interfaces not defined in the input.
-    #[clap(long)]
+    #[clap(long, num_args = 0..)]
     phantom_interface: Vec<String>,
 }
 
