@@ -119,6 +119,12 @@ fn main() -> Result<()> {
         package_name: PackageName::new(wit_ns, wit_package, wit_version),
         interface_name: webidl_interface.unwrap_or_else(|| "default".into()),
         unsupported_features: HandleUnsupported::Warn,
+        phantom_interface: [
+            "EventListener",
+        ]
+        .iter()
+        .map(|s| s.to_string())
+        .collect(),
         singleton_interface: webidl_singleton_interface,
         ..Default::default()
     };
