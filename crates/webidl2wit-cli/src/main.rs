@@ -118,7 +118,7 @@ fn main() -> Result<()> {
     let opts = ConversionOptions {
         package_name: PackageName::new(wit_ns, wit_package, wit_version),
         interface_name: webidl_interface.unwrap_or_else(|| "default".into()),
-        unsupported_features: HandleUnsupported::Bail,
+        unsupported_features: HandleUnsupported::Warn,
         singleton_interface: webidl_singleton_interface,
         ..Default::default()
     };
